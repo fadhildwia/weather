@@ -1,6 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
-import { ActivityIndicator, ImageBackground } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  ImageBackground,
+  TouchableOpacity,
+} from 'react-native';
 
 import {
   ActivityContainer,
@@ -22,12 +26,15 @@ import { useFormik } from 'formik';
 import Input from '../../compnents/Input';
 import useWeatherDataByCity from '../../hooks/useWeatherByCity';
 import WorldMap from '../../assets/WorldMap/WorldMap.png';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { _retrieveLocalStorageItem } from '../../utils/localStorage';
 
 const ValidationSchema = Yup.object({
   search: Yup.string().required('City name is required'),
 });
 
 const Search = () => {
+  const [favorite, setFavorite] = useState<any>();
   const {
     mutate: searchCity,
     data: weatherData,
@@ -44,6 +51,17 @@ const Search = () => {
       searchCity({ city: values.search });
     },
   });
+
+  useEffect(() => {
+    const retrieveLocalStorage = async () => {
+      const favoriteLocalStorage = await _retrieveLocalStorageItem('Favorite');
+      if (favoriteLocalStorage) {
+        console.log('favorite', favoriteLocalStorage);
+        setFavorite(favoriteLocalStorage);
+      }
+    };
+    retrieveLocalStorage();
+  }, []);
 
   return (
     <Container>
@@ -92,6 +110,12 @@ const Search = () => {
                         º
                       </TemperatureText>
                     </TemperatureText>
+                    <TouchableOpacity onPress={() => {}}>
+                      <Icon name="add-circle" size={55} color="#FEEF0A" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {}}>
+                      <Icon name="close-circle" size={55} color="#f52a2a" />
+                    </TouchableOpacity>
                   </Temperature>
                   <Footer>
                     {weatherData?.main && (
