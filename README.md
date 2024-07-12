@@ -7,7 +7,7 @@
 <br>
 
 <h1 align="center">
-  <img alt="WeatherApp" title="WeatherApp" src="./github/record.gif" height="425" />
+  <img alt="WeatherApp" title="WeatherApp" src="./github/result.gif" height="425" />
 </h1>
 
 ### Features
