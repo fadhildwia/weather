@@ -53,7 +53,7 @@ export const TemperatureText = styled.Text`
 export const Footer = styled.View`
   flex-direction: row;
   justify-content: space-around;
-  height: 30%;
+  height: 20%;
   width: 100%;
   align-items: center;
 `;

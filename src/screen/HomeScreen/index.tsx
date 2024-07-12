@@ -11,6 +11,7 @@ import {
   ImageBackground,
   View,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 
 import {
@@ -20,24 +21,25 @@ import {
   HeaderLocation,
   ImageView,
   Main,
-  ReloadButton,
   Temperature,
   TemperatureText,
   Text,
 } from './styles';
 
 import Geolocation from 'react-native-geolocation-service';
-
 import appConfig from '../../../app.json';
 import { capitalize } from '../../utils/capitalize';
 import WorldMap from '../../assets/WorldMap/WorldMap.png';
 import Icon from 'react-native-vector-icons/Ionicons';
-
 import useWeatherData from '../../hooks/useWeatherData';
 import weatherImage from '../../utils/weatherImages';
+import useGetWeatherAll from '../../hooks/useGetWeatherAll';
+import DailyData from '../../compnents/DailyData';
 
 function Home() {
-  const [location, setLocation] = useState<Geolocation.GeoPosition | null>();
+  const [location, setLocation] = useState<Geolocation.GeoPosition | null>(
+    null,
+  );
 
   useEffect(() => {
     (async () => {
@@ -50,8 +52,8 @@ function Home() {
   const {
     data: weatherData,
     isLoading: loadingData,
-    refetch,
-    isRefetching,
+    refetch: refetchWeatherData,
+    isRefetching: loadingWeatherData,
   } = useWeatherData({
     latitude: location?.coords?.latitude as number | string,
     longitude: location?.coords?.longitude as number | string,
@@ -59,6 +61,28 @@ function Home() {
       enabled:
         !!location && !!location.coords.latitude && !!location.coords.longitude,
     },
+  });
+
+  const { data: weatherAll, isLoading: loadingAll } = useGetWeatherAll({
+    latitude: location?.coords?.latitude as number | string,
+    longitude: location?.coords?.longitude as number | string,
+    options: {
+      enabled:
+        !!location && !!location.coords.latitude && !!location.coords.longitude,
+    },
+  });
+
+  const { daily } = weatherAll || {};
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const daysData: Array<string> = [];
+  const tempData: Array<any> = [];
+
+  daily?.forEach((e, index) => {
+    if (index >= 1) {
+      const dayIndex = new Date(e.dt * 1000).getUTCDay();
+      daysData.push(days[dayIndex]);
+      tempData.push(e.temp.day);
+    }
   });
 
   const hasPermissionIOS = async () => {
@@ -163,7 +187,7 @@ function Home() {
     <Container>
       <Header>
         <View>
-          {weatherData && !loadingData && !isRefetching && (
+          {weatherData && !loadingData && !loadingWeatherData && (
             <View style={{ flexDirection: 'row' }}>
               <HeaderLocation style={{ fontWeight: 'bold' }}>
                 {weatherData.name},
@@ -190,7 +214,7 @@ function Home() {
                 {weatherData?.weather[0].icon && (
                   <Image
                     source={weatherImage(weatherData?.weather[0].icon)}
-                    style={{ width: 250, height: 250 }}
+                    style={{ width: 200, height: 200 }}
                   />
                 )}
               </ImageView>
@@ -201,9 +225,12 @@ function Home() {
                   º
                 </TemperatureText>
               </TemperatureText>
-              <ReloadButton onPress={() => refetch()}>
-                <Icon name="reload-circle" size={75} color="#FEEF0A" />
-              </ReloadButton>
+              {!loadingAll && daysData && tempData && (
+                <DailyData dayData={daysData} tempData={tempData} />
+              )}
+              <TouchableOpacity onPress={() => refetchWeatherData()}>
+                <Icon name="reload-circle" size={55} color="#FEEF0A" />
+              </TouchableOpacity>
             </Temperature>
           ) : (
             <Temperature>
