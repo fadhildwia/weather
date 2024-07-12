@@ -1,7 +1,6 @@
 import { useQuery, UseQueryOptions } from 'react-query';
 import api from '../services/api';
 import { WeatherData } from '../types/WeatherData';
-import { WEATHER_API_KEY } from '@env';
 
 const fetchWeatherData = async ({
   latitude,
@@ -11,7 +10,7 @@ const fetchWeatherData = async ({
   longitude: number | string;
 }) => {
   const { data } = await api.get<WeatherData>(
-    `/weather?lat=${latitude}&lon=${longitude}&appid=${WEATHER_API_KEY}&units=metric`,
+    `/weather?lat=${latitude}&lon=${longitude}&appid=${process.env.WEATHER_API_KEY}&units=metric`,
   );
   return data;
 };

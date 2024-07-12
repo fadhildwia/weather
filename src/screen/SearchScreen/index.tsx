@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, ImageBackground } from 'react-native';
 
 import {
   ActivityContainer,
@@ -21,6 +21,7 @@ import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import Input from '../../compnents/Input';
 import useWeatherDataByCity from '../../hooks/useWeatherByCity';
+import WorldMap from '../../assets/WorldMap/WorldMap.png';
 
 const ValidationSchema = Yup.object({
   search: Yup.string().required('City name is required'),
@@ -30,6 +31,7 @@ const Search = () => {
   const {
     mutate: searchCity,
     data: weatherData,
+    error,
     isLoading: loadingData,
   } = useWeatherDataByCity();
 
@@ -56,52 +58,68 @@ const Search = () => {
           onChangeText={value => formik.setFieldValue('search', value)}
           onSubmitEditing={() => formik.handleSubmit()}
         />
-        {!loadingData ? (
-          weatherData?.main.temp && weatherData?.weather[0].description ? (
-            <Content>
-              <ImageView>
-                {weatherData?.weather[0].icon && (
-                  <Image
-                    source={weatherImage(weatherData?.weather[0].icon)}
-                    style={{ width: 250, height: 250 }}
-                  />
-                )}
-              </ImageView>
-              <Temperature>
-                <Text>
-                  {weatherData.name}, {weatherData.sys.country}
-                </Text>
-                <Text>{capitalize(weatherData?.weather[0].description)}</Text>
-                <TemperatureText>
-                  {weatherData?.main.temp.toFixed(0)}
-                  <TemperatureText style={{ color: '#FEEF0A' }}>
-                    º
-                  </TemperatureText>
-                </TemperatureText>
-              </Temperature>
-              <Footer>
-                {weatherData?.main && (
-                  <>
+        <ImageBackground
+          resizeMode="stretch"
+          source={WorldMap}
+          style={{
+            width: '100%',
+            height: '40%',
+            flex: 1,
+            alignItems: 'center',
+          }}>
+          {!loadingData ? (
+            <>
+              {weatherData?.main.temp && weatherData?.weather[0].description ? (
+                <Content>
+                  <ImageView>
+                    {weatherData?.weather[0].icon && (
+                      <Image
+                        source={weatherImage(weatherData?.weather[0].icon)}
+                        style={{ width: 250, height: 250 }}
+                      />
+                    )}
+                  </ImageView>
+                  <Temperature>
                     <Text>
-                      Min: {weatherData?.main.temp_min.toFixed(0)}
-                      <Text style={{ color: '#FEEF0A' }}>º</Text>
+                      {weatherData.name}, {weatherData.sys.country}
                     </Text>
                     <Text>
-                      Max: {weatherData?.main.temp_max.toFixed(0)}
-                      <Text style={{ color: '#FEEF0A' }}>º</Text>
+                      {capitalize(weatherData?.weather[0].description)}
                     </Text>
-                  </>
-                )}
-              </Footer>
-            </Content>
+                    <TemperatureText>
+                      {weatherData?.main.temp.toFixed(0)}
+                      <TemperatureText style={{ color: '#FEEF0A' }}>
+                        º
+                      </TemperatureText>
+                    </TemperatureText>
+                  </Temperature>
+                  <Footer>
+                    {weatherData?.main && (
+                      <>
+                        <Text>
+                          Min: {weatherData?.main.temp_min.toFixed(0)}
+                          <Text style={{ color: '#FEEF0A' }}>º</Text>
+                        </Text>
+                        <Text>
+                          Max: {weatherData?.main.temp_max.toFixed(0)}
+                          <Text style={{ color: '#FEEF0A' }}>º</Text>
+                        </Text>
+                      </>
+                    )}
+                  </Footer>
+                </Content>
+              ) : (
+                error && (
+                  <Text style={{ marginBottom: 'auto' }}>Not Found Data</Text>
+                )
+              )}
+            </>
           ) : (
-            <Text style={{ marginBottom: 'auto' }}>Not Found Data</Text>
-          )
-        ) : (
-          <ActivityContainer>
-            <ActivityIndicator size="large" color="#FEEF0A" />
-          </ActivityContainer>
-        )}
+            <ActivityContainer>
+              <ActivityIndicator size="large" color="#FEEF0A" />
+            </ActivityContainer>
+          )}
+        </ImageBackground>
       </Main>
     </Container>
   );
