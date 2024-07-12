@@ -16,8 +16,9 @@ import {
   _storeLocalStorageItem,
 } from '../../utils/localStorage';
 import { capitalize } from '../../utils/capitalize';
+import { FavoriteProps } from '../../types/routes';
 
-const Favorite = () => {
+const Favorite = ({ navigation }: FavoriteProps) => {
   const [favorite, setFavorite] = useState<any>();
 
   useFocusEffect(
@@ -47,7 +48,8 @@ const Favorite = () => {
   };
 
   const renderItem = ({ item }: any) => (
-    <View
+    <TouchableOpacity
+      onPress={() => navigation.navigate('Detail', { city: item })}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
@@ -65,7 +67,7 @@ const Favorite = () => {
         style={{ marginLeft: 10 }}>
         <Icon name="trash-bin" size={15} color="red" />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
