@@ -65,3 +65,11 @@ export const Image = styled.Image`
   width: 250px;
   height: 250px;
 `;
+
+export const Footer = styled.View`
+  flex-direction: row;
+  justify-content: space-around;
+  height: 30%;
+  width: 100%;
+  align-items: center;
+`;

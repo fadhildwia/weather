@@ -47,16 +47,11 @@ function Home() {
     })();
   }, []);
 
-  useEffect(() => {
-    if (location?.coords?.latitude && location?.coords?.longitude) {
-      refetch();
-    }
-  }, [location]);
-
   const {
     data: weatherData,
     isLoading: loadingData,
     refetch,
+    isRefetching,
   } = useWeatherData({
     latitude: location?.coords?.latitude as number | string,
     longitude: location?.coords?.longitude as number | string,
@@ -168,7 +163,7 @@ function Home() {
     <Container>
       <Header>
         <View>
-          {weatherData && !loadingData && (
+          {weatherData && !loadingData && !isRefetching && (
             <View style={{ flexDirection: 'row' }}>
               <HeaderLocation style={{ fontWeight: 'bold' }}>
                 {weatherData.name},
