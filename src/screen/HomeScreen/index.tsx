@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -11,7 +11,6 @@ import {
   ImageBackground,
   View,
   Image,
-  TouchableOpacity,
 } from 'react-native';
 
 import {
@@ -19,7 +18,9 @@ import {
   Footer,
   Header,
   HeaderLocation,
+  ImageView,
   Main,
+  ReloadButton,
   Temperature,
   TemperatureText,
   Text,
@@ -28,30 +29,15 @@ import {
 import Geolocation from 'react-native-geolocation-service';
 
 import appConfig from '../../../app.json';
-import {capitalize} from '../../utils/capitalize';
-
+import { capitalize } from '../../utils/capitalize';
 import WorldMap from '../../assets/WorldMap/WorldMap.png';
-import Image01d from '../../assets/Weather/01d/01d.png';
-import Image01n from '../../assets/Weather/01n/01n.png';
-import Image09d from '../../assets/Weather/09d/09d.png';
-import Image09n from '../../assets/Weather/09n/09n.png';
-import Image10d from '../../assets/Weather/10d/10d.png';
-import Image10n from '../../assets/Weather/10n/10n.png';
-import Image11d from '../../assets/Weather/11d/11d.png';
-import Image11n from '../../assets/Weather/11n/11n.png';
-import Image13d from '../../assets/Weather/13d/13d.png';
-import Image13n from '../../assets/Weather/13n/13n.png';
-import Image0203d from '../../assets/Weather/0203d/0203d.png';
-import Image0203n from '../../assets/Weather/0203n/0203n.png';
-import Image0450 from '../../assets/Weather/0450/0450.png';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-import {HomeProps} from '../../types/routes';
 import useWeatherData from '../../hooks/useWeatherData';
+import weatherImage from '../../utils/weatherImages';
 
-function Home({navigation}: HomeProps) {
-  const [location, setLocation] = useState<Geolocation.GeoPosition | null>(
-    null,
-  );
+function Home() {
+  const [location, setLocation] = useState<Geolocation.GeoPosition | null>();
 
   useEffect(() => {
     (async () => {
@@ -71,7 +57,14 @@ function Home({navigation}: HomeProps) {
     data: weatherData,
     isLoading: loadingData,
     refetch,
-  } = useWeatherData(location?.coords?.latitude, location?.coords?.longitude);
+  } = useWeatherData({
+    latitude: location?.coords?.latitude as number | string,
+    longitude: location?.coords?.longitude as number | string,
+    options: {
+      enabled:
+        !!location && !!location.coords.latitude && !!location.coords.longitude,
+    },
+  });
 
   const hasPermissionIOS = async () => {
     const openSetting = () => {
@@ -95,8 +88,8 @@ function Home({navigation}: HomeProps) {
         `Turn on Location Services to allow "${appConfig.displayName}" to determine your location.`,
         '',
         [
-          {text: 'Go to Settings', onPress: openSetting},
-          {text: "Don't Use Location", onPress: () => {}},
+          { text: 'Go to Settings', onPress: openSetting },
+          { text: "Don't Use Location", onPress: () => {} },
         ],
       );
     }
@@ -171,65 +164,16 @@ function Home({navigation}: HomeProps) {
     );
   };
 
-  function renderImage(iconId: string) {
-    switch (iconId) {
-      case '01d':
-        return Image01d;
-      case '01n':
-        return Image01n;
-      case '02d':
-        return Image0203d;
-      case '02n':
-        return Image0203n;
-      case '03d':
-        return Image0203d;
-      case '03n':
-        return Image0203n;
-      case '04d':
-        return Image0450;
-      case '04n':
-        return Image0450;
-      case '09d':
-        return Image09d;
-      case '09n':
-        return Image09n;
-      case '10d':
-        return Image10d;
-      case '10n':
-        return Image10n;
-      case '11d':
-        return Image11d;
-      case '11n':
-        return Image11n;
-      case '13d':
-        return Image13d;
-      case '13n':
-        return Image13n;
-      case '50d':
-        return Image0450;
-      case '50n':
-        return Image0450;
-
-      default:
-        break;
-    }
-  }
-
-  console.log(weatherData);
-  console.log('location', location);
   return (
     <Container>
       <Header>
         <View>
-          {weatherData && (
-            <View style={{flexDirection: 'row'}}>
-              <HeaderLocation style={{fontWeight: 'bold'}}>
-                {weatherData.timezone.split('/')[0]},
+          {weatherData && !loadingData && (
+            <View style={{ flexDirection: 'row' }}>
+              <HeaderLocation style={{ fontWeight: 'bold' }}>
+                {weatherData.name},
               </HeaderLocation>
-              <HeaderLocation>
-                {' '}
-                {weatherData.timezone.split('/')?.[1]?.replace('_', ' ')}
-              </HeaderLocation>
+              <HeaderLocation> {weatherData.sys.country}</HeaderLocation>
             </View>
           )}
         </View>
@@ -245,44 +189,46 @@ function Home({navigation}: HomeProps) {
           alignItems: 'center',
         }}>
         <Main>
-          <View
-            style={{
-              width: '100%',
-              alignItems: 'center',
-            }}>
-            {weatherData?.current.weather[0].icon && (
-              <Image
-                source={renderImage(weatherData?.current.weather[0].icon)}
-                style={{width: 250, height: 250}}
-              />
-            )}
-          </View>
-          {!loadingData &&
-          weatherData?.current.weather[0].description &&
-          weatherData?.current.temp ? (
+          {weatherData?.main.temp && weatherData?.weather[0].description ? (
             <Temperature>
-              <Text>
-                {capitalize(weatherData?.current.weather[0].description)}
-              </Text>
+              <ImageView>
+                {weatherData?.weather[0].icon && (
+                  <Image
+                    source={weatherImage(weatherData?.weather[0].icon)}
+                    style={{ width: 250, height: 250 }}
+                  />
+                )}
+              </ImageView>
+              <Text>{capitalize(weatherData?.weather[0].description)}</Text>
               <TemperatureText>
-                {weatherData?.current.temp.toFixed(0)}
-                <TemperatureText style={{color: '#FEEF0A'}}>º</TemperatureText>
+                {weatherData?.main.temp.toFixed(0)}
+                <TemperatureText style={{ color: '#FEEF0A' }}>
+                  º
+                </TemperatureText>
               </TemperatureText>
+              <ReloadButton onPress={() => refetch()}>
+                <Icon name="reload-circle" size={75} color="#FEEF0A" />
+              </ReloadButton>
             </Temperature>
           ) : (
             <Temperature>
-              <ActivityIndicator size="large" color="#fff" />
+              <ActivityIndicator size="large" color="#ffffff" />
             </Temperature>
           )}
 
-          <TouchableOpacity
-            style={{backgroundColor: '#333', padding: 10, borderRadius: 5}}
-            onPress={() => refetch()}>
-            <Text>Reload</Text>
-          </TouchableOpacity>
-
           <Footer>
-            <Text>Wind: {weatherData?.current.wind_speed} KM</Text>
+            {weatherData?.main && (
+              <>
+                <Text>
+                  Min: {weatherData?.main.temp_min.toFixed(0)}
+                  <Text style={{ color: '#FEEF0A' }}>º</Text>
+                </Text>
+                <Text>
+                  Max: {weatherData?.main.temp_max.toFixed(0)}
+                  <Text style={{ color: '#FEEF0A' }}>º</Text>
+                </Text>
+              </>
+            )}
           </Footer>
         </Main>
       </ImageBackground>

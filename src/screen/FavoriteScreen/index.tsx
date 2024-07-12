@@ -1,10 +1,10 @@
 import React from 'react';
-import {TouchableOpacity} from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
-import {FavoriteProps} from '../../types/routes';
-import {Container, Text} from './styles';
+import { FavoriteProps } from '../../types/routes';
+import { Container, Text } from './styles';
 
-function Favorite({navigation}: FavoriteProps) {
+function Favorite({ navigation }: FavoriteProps) {
   return (
     <Container>
       <Text>Favorite</Text>

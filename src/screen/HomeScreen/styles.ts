@@ -57,3 +57,17 @@ export const Footer = styled.View`
   width: 100%;
   align-items: center;
 `;
+
+export const ImageView = styled.View`
+  width: 100%;
+  align-items: center;
+`;
+
+export const Image = styled.Image`
+  width: 250px;
+  height: 250px;
+`;
+
+export const ReloadButton = styled.TouchableOpacity`
+  margin-top: 20px;
+`;
