@@ -20,10 +20,12 @@ const fetchGetWeatherAll = async ({
   latitude: number | string;
   longitude: number | string;
 }) => {
-  const { data } = await apiV3.get<WeatherAllInterface>(
-    `/onecall?lat=${latitude}&lon=${longitude}&appid=${process.env.WEATHER_API_KEY}&units=metric`,
-  );
-  return data;
+  if (process.env.WEATHER_API_KEY) {
+    const { data } = await apiV3.get<WeatherAllInterface>(
+      `/onecall?lat=${latitude}&lon=${longitude}&appid=${process.env.WEATHER_API_KEY}&units=metric`,
+    );
+    return data;
+  }
 };
 
 const useGetWeatherAll = ({

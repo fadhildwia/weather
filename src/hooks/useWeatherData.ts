@@ -9,10 +9,12 @@ const fetchWeatherData = async ({
   latitude: number | string;
   longitude: number | string;
 }) => {
-  const { data } = await apiV2.get<WeatherData>(
-    `/weather?lat=${latitude}&lon=${longitude}&appid=${process.env.WEATHER_API_KEY}&units=metric`,
-  );
-  return data;
+  if (process.env.WEATHER_API_KEY) {
+    const { data } = await apiV2.get<WeatherData>(
+      `/weather?lat=${latitude}&lon=${longitude}&appid=${process.env.WEATHER_API_KEY}&units=metric`,
+    );
+    return data;
+  }
 };
 
 const useWeatherData = ({

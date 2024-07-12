@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   ImageBackground,
@@ -27,14 +27,19 @@ import Input from '../../compnents/Input';
 import useWeatherDataByCity from '../../hooks/useWeatherByCity';
 import WorldMap from '../../assets/WorldMap/WorldMap.png';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { _retrieveLocalStorageItem } from '../../utils/localStorage';
+import {
+  _retrieveLocalStorageItem,
+  _storeLocalStorageItem,
+} from '../../utils/localStorage';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ValidationSchema = Yup.object({
   search: Yup.string().required('City name is required'),
 });
 
 const Search = () => {
-  const [favorite, setFavorite] = useState<any>();
+  const [favorite, setFavorite] = useState<Array<string>>([]);
+
   const {
     mutate: searchCity,
     data: weatherData,
@@ -52,16 +57,42 @@ const Search = () => {
     },
   });
 
-  useEffect(() => {
-    const retrieveLocalStorage = async () => {
-      const favoriteLocalStorage = await _retrieveLocalStorageItem('Favorite');
-      if (favoriteLocalStorage) {
-        console.log('favorite', favoriteLocalStorage);
-        setFavorite(favoriteLocalStorage);
-      }
-    };
-    retrieveLocalStorage();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const retrieveLocalStorage = async () => {
+        const favoriteLocalStorage = await _retrieveLocalStorageItem(
+          'Favorite',
+        );
+        if (favoriteLocalStorage) {
+          setFavorite(JSON.parse(favoriteLocalStorage));
+        }
+      };
+      retrieveLocalStorage();
+    }, []),
+  );
+
+  const handleAddFavorite = () => {
+    _storeLocalStorageItem({
+      storageKey: 'Favorite',
+      storageValue: JSON.stringify([
+        ...favorite,
+        formik.values.search.toLowerCase(),
+      ]),
+    });
+    setFavorite([...favorite, formik.values.search.toLowerCase()]);
+  };
+
+  const handleRemoveFavorite = () => {
+    const newFavorite = favorite.filter(
+      (item: string) => item !== formik.values.search.toLowerCase(),
+    );
+
+    _storeLocalStorageItem({
+      storageKey: 'Favorite',
+      storageValue: JSON.stringify(newFavorite),
+    });
+    setFavorite(newFavorite);
+  };
 
   return (
     <Container>
@@ -110,12 +141,15 @@ const Search = () => {
                         º
                       </TemperatureText>
                     </TemperatureText>
-                    <TouchableOpacity onPress={() => {}}>
-                      <Icon name="add-circle" size={55} color="#FEEF0A" />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {}}>
-                      <Icon name="close-circle" size={55} color="#f52a2a" />
-                    </TouchableOpacity>
+                    {favorite?.includes(formik.values.search.toLowerCase()) ? (
+                      <TouchableOpacity onPress={handleRemoveFavorite}>
+                        <Icon name="close-circle" size={55} color="#f52a2a" />
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity onPress={handleAddFavorite}>
+                        <Icon name="add-circle" size={55} color="#FEEF0A" />
+                      </TouchableOpacity>
+                    )}
                   </Temperature>
                   <Footer>
                     {weatherData?.main && (
