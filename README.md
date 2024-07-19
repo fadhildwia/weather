@@ -6,36 +6,72 @@
 
 <br>
 
+### Detail Apps on Android
+
 <h1 align="center">
   <img alt="WeatherApp" title="WeatherApp" src="./github/result.gif" height="425" />
 </h1>
 
-### Features
+## 📱 Features
 
-- [x] Icons change according to weather
-- [x] Weather API consumption
-- [x] User location retrieval
-- [x] Refresh data button
-- [x] City search
-- [x] Favorite List
+- Icons change according to weather
+- Weather API consumption
+- User location retrieval
+- Refresh data button
+- City search
+- Favorite List
 
-### Running the Mobile App
+## 🚀 Technologies & Resources
 
-```bash
-# Clone this repository
-$ git clone https://github.com/fadhildwia/weather.git
+- [x] [React Native](https://reactnative.dev/docs/getting-started-without-a-framework)
+- [x] [Async Storage](https://react-native-async-storage.github.io/async-storage/docs/install/)
+- [x] [Axios](https://reactnavigation.org/docs/getting-started/)
+- [x] [React Navigation](https://reactnavigation.org/docs/getting-started/)
+- [x] [React Query](https://tanstack.com/query/v3)
+- [x] [Formik](https://formik.org/docs/overview)
+- [x] [React Native Chart Kit](https://www.npmjs.com/package/react-native-chart-kit)
+- [x] [React Native Geolocation Service](https://www.npmjs.com/package/react-native-geolocation-service)
+- [x] [Styled Comoponents](https://styled-components.com/docs)
+- [x] [Yup](https://www.npmjs.com/package/yup)
 
-# Navigate into the project folder in your terminal/cmd
-$ cd Weather
+## 💻 Installation
 
-# Make a copy of '.env.example' to '.env'
-# Put your Weather API credential in .env file
-$ cp .env.example .env
+1. #### Clone the repository:
 
-# Install dependencies
-$ yarn
+   ```bash
+   git clone https://github.com/fadhildwia/weather.git
+   ```
 
-# If you're emulating with Android, run this command
-# Make sure your emulator is open
-$ yarn android
-```
+2. #### Navigate to the project directory:
+
+   ```bash
+   cd weather
+   ```
+
+3. #### Install the dependencies:
+   ```bash
+   yarn
+   #or
+   npm install
+   ```
+4. #### Make a copy of `.env.example` to `.env`:
+   ```bash
+   # Put your Weather API credential in .env file
+   cp .env.example .env
+   ```
+5. #### Run the project:
+   ```bash
+   yarn android
+   #or
+   npm run android
+   ```
+
+<!-- ## License
+
+This example application is licensed under the [MIT License](LICENSE).
+
+--- -->
+
+---
+
+Feel free to explore the code and adapt it to suit your needs! If you encounter any issues or have suggestions for improvements, please don't hesitate to open an issue or submit a pull request.
